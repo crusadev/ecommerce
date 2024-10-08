@@ -1,7 +1,7 @@
 const mongoose=require('mongoose');
 
 const Schema= mongoose.Schema;
-const UserSchema= new Schema({
+const OrderSchema= new Schema({
     products: {
         type:String,
         require: true,
@@ -21,4 +21,4 @@ const UserSchema= new Schema({
         unique: true
     },
 });
-module.exports = mongoose.model('User', UserSchema);
+module.exports = mongoose.model('Orders', OrderSchema);
