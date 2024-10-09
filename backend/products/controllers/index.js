@@ -8,4 +8,5 @@ const postProduct = async (req, res) => {
     } catch (err) { console.log(err) }
 }
 
+// const getAllProducts
 module.exports = {postProduct}

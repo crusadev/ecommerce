@@ -1,28 +1,24 @@
 const mongoose=require('mongoose');
 
 const Schema= mongoose.Schema;
-const UserSchema= new Schema({
-    fullname: {
+const ReviewSchema= new Schema({
+    user: {
         type:String,
         require: true,
         unique: true
     },
-    password: {
+    stars: {
+        type:Number,
+        require: true
+    },
+    title:{
         type:String,
         require: true
     },
-    email:{
+    body:{
         type:String,
         require: true,
         unique: true
-    },
-    adress:{
-        type:String,
-        
-        require: true
-    },
-    orders:{
-        
     },
 });
-module.exports = mongoose.model('Users', UserSchema);
+module.exports = mongoose.model('Review', ReviewSchema);
