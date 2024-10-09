@@ -5,6 +5,7 @@ const cookieParser = require('cookie-parser')
 const multer = require('multer')
 const productsRouter = require("./products/routes")
 const usersRouter = require("./users/routes")
+const verifyAccessToken = require('./middleware/verifyToken');
 
 const app = express()
 const PORT = 8080 || process.env.PORT;
@@ -32,4 +33,5 @@ mongoose.connect(`mongodb+srv://${process.env.mongoPASS}:zfwB5USIUvKplQjv@cluste
 
 //Routes
 app.use("/user", usersRouter)
+app.use(verifyAccessToken)
 app.use("/product", productsRouter)
