@@ -4,10 +4,12 @@ const cors = require('cors')
 const cookieParser = require('cookie-parser')
 const multer = require('multer')
 const productsRouter = require("./products/routes")
+const usersRouter = require("./users/routes")
 
 const app = express()
-const PORT= 8080 || process.env.PORT;
+const PORT = 8080 || process.env.PORT;
 
+//Middleware
 app.use(cors({
     origin: ['http://localhost:3000'],
     credentials: true,
@@ -16,11 +18,18 @@ app.use(cors({
 app.use(express.json({ limit: '50mb' }))
 app.use(cookieParser())
 
+//MongoDB
 mongoose.connect(`mongodb+srv://${process.env.mongoPASS}:zfwB5USIUvKplQjv@cluster0.bezcq.mongodb.net/ecommerce?retryWrites=true&w=majority&appName=Cluster0`)
-.then(result => console.log("Connected to mongodb"))
+    .then(() => {
+        console.log('Connected to MongoDB Atlas');
+        app.listen(PORT, () => {
+            console.log(`Server is running on port ${PORT}`);
+        });
+    })
+    .catch((error) => {
+        console.error('Error connecting to MongoDB Atlas: ', error);
+    });
 
-app.use("/product",productsRouter)
-
-app.listen(PORT, () => {
-    console.log(`APP listening on port ${PORT}`);
-});
+//Routes
+app.use("/user", usersRouter)
+app.use("/product", productsRouter)
