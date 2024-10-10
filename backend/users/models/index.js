@@ -17,14 +17,9 @@ const UserSchema = new Schema({
         require: true,
         unique: true
     },
-<<<<<<< HEAD
     adress:{
         type:String,
         
-=======
-    address: {
-        type: String,
->>>>>>> b7bab0c3d7c0aceffce63f8326d204868415a4ed
         require: true
     },
     orders: [{
