@@ -10,8 +10,6 @@ const postProduct = async (req, res) => {
     }
 }
 
-// All Products
-
 const getAllProducts = async (req, res) => {
     try {
         const Products = await productModel.find()
@@ -21,43 +19,30 @@ const getAllProducts = async (req, res) => {
     }
 }
 
-module.exports = { postProduct, getAllProducts }
-
-
-//One Product
-
 const getOneProduct = async (req, res) => {
     try {
         const { id } = req.params;
-        const product = await productModel.findById(id);
-
-        // Verifică dacă produsul există
-        if (!product) {
-            return res.status(404).json({ error: "Product not found" });
+        const Product = await productModel.findById(id);
+        if (!Product) {
+            return res.status(404).json({ error: "InvalidId" });
         }
-
-        res.status(200).json(product);
+        res.status(200).json(Product);
     } catch (err) {
         res.status(400).json({ error: err.message });
     }
 }
-module.exports= {postProduct, getOneProduct}
-
-
-// Delete Product
 
 const deleteProduct = async (req, res) => {
     try {
         const { id } = req.params;
-        const deletedProduct = await productModel.findByIdAndDelete(id);
-
-        //Verificare daca produsul exista
-        if(!deletedProduct){
-            return res.status(404).json({error: "Product not found"});
+        const Product = await productModel.findByIdAndDelete(id);
+        if (!Product) {
+            return res.status(404).json({ error: "InvalidId" });
         }
-        res.status(200).json({ message: "Product deleted successfully"});
-    } catch(err){
-        res.status(400).json({error:err.message});
+        res.status(200).json("Product deleted successfully");
+    } catch (err) {
+        res.status(400).json({ error: err.message });
     }
 }
-module.exports= {postProduct, deleteProduct}
+
+module.exports = { postProduct, getAllProducts, getOneProduct, deleteProduct }

@@ -1,7 +1,6 @@
 const express = require('express')
 const router = express.Router()
-const { postReview, getAllReviews } = require('../controllers')
-const { postReview, deleteReview} = require ('../controllers')
+const { postReview, getAllReviews, deleteReview } = require('../controllers')
 
 router.post('/', postReview)
 router.get('/', getAllReviews)
