@@ -64,4 +64,23 @@ const logUser = async (req, res) => {
     }
 }
 
-module.exports = { postUser, logUser, createAccessToken }
+const signoutUser = async (req, res) => {
+    res.cookie('refreshToken', '', { maxAge: 1, httpOnly: true, sameSite: 'none', secure: true })
+    res.cookie('accessToken', '', { maxAge: 1, httpOnly: true, sameSite: 'none', secure: true })
+    res.status(200).json('Signed out')
+}
+
+const getCurrentUser = async (req, res) => {
+    const authHeader = req.headers['authorization']
+    const accessToken = req.cookies.accessToken || authHeader?.split(' ')[1]
+    try {
+        const Token = jwt.verify(accessToken, process.env.JWT_ACCESS_SECRET)
+        const User = await userModel.findById(Token.id).select('_id fullname email')
+        res.status(200).json(User)
+    } catch (error) {
+        res.status(400).json({ error: error.message })
+    }
+
+}
+
+module.exports = { postUser, logUser, createAccessToken, signoutUser, getCurrentUser }
