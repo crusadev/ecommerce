@@ -20,13 +20,13 @@ const refreshOptions = {
     httpOnly: true,
     maxAge: 60000 * 15,
     sameSite: "none",
-    secure: true,
+    secure: false,
 };
 const accessOptions = {
     httpOnly: true,
     maxAge: 60000 * 5,
     sameSite: "none",
-    secure: true,
+    secure: false,
 };
 
 
@@ -64,4 +64,4 @@ const logUser = async (req, res) => {
     }
 }
 
-module.exports = { postUser, logUser }
+module.exports = { postUser, logUser, createAccessToken }
