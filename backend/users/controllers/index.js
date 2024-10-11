@@ -76,11 +76,26 @@ const getCurrentUser = async (req, res) => {
     try {
         const Token = jwt.verify(accessToken, process.env.JWT_ACCESS_SECRET)
         const User = await userModel.findById(Token.id).select('_id fullname email')
+        if (!User) {
+            return res.status(404).json({ error: "InvalidId" });
+        }
         res.status(200).json(User)
     } catch (error) {
         res.status(400).json({ error: error.message })
     }
-
 }
 
-module.exports = { postUser, logUser, createAccessToken, signoutUser, getCurrentUser }
+const deleteUser = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const User = await userModel.findByIdAndDelete(id);
+        if (!User) {
+            return res.status(404).json({ error: "InvalidId" });
+        }
+        res.status(200).json("User deleted successfully");
+    } catch (err) {
+        res.status(400).json({ error: err.message });
+    }
+}
+
+module.exports = { postUser, logUser, createAccessToken, signoutUser, getCurrentUser, deleteUser }
