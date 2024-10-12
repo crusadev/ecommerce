@@ -15,7 +15,7 @@ const createRefreshToken = (id) => {
     return jwt.sign({ id }, process.env.JWT_REFRESH_SECRET, { expiresIn: '15m' })
 }
 
-//Cookies options
+//Cookies options (in production -> secure:true)
 const refreshOptions = {
     httpOnly: true,
     maxAge: 60000 * 15,
@@ -41,8 +41,7 @@ const postUser = async (req, res) => {
         const refreshToken = createRefreshToken(User._id)
         res.cookie('refreshToken', refreshToken, refreshOptions)
 
-        res.status(200).json(User)
-        //res.status(200).json('Account created')
+        res.status(200).json('Account created')
     } catch (err) {
         res.status(400).json({ error: err.message })
     }
@@ -75,11 +74,14 @@ const getCurrentUser = async (req, res) => {
     const accessToken = req.cookies.accessToken || authHeader?.split(' ')[1]
     try {
         const Token = jwt.verify(accessToken, process.env.JWT_ACCESS_SECRET)
-        const User = await userModel.findById(Token.id).select('_id fullname email')
+        const User = await userModel.findById(Token.id).select('fullname email')
         if (!User) {
             return res.status(404).json({ error: "InvalidId" });
         }
-        res.status(200).json(User)
+        /*  If the 'return' header is true, then I want to use this controller
+            as a function in other controllers. And I want it to just return the
+            value, not respond   */
+        return req.headers['return'] !== true ? res.status(200).json(User) : User
     } catch (error) {
         res.status(400).json({ error: error.message })
     }
