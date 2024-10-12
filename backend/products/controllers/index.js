@@ -1,9 +1,13 @@
 const productModel = require('../models')
 
 const postProduct = async (req, res) => {
+    //in production -> only admins
     const { admin, name, description, images, stock, price, brand, category } = req.body
     try {
-        const Product = await productModel.create({ admin, name, description, images, stock, price, brand, category })
+        const Product = await productModel.create
+            ({
+                admin, name, description, images, stock, price, brand, category
+            })
         res.status(200).json(Product)
     } catch (err) {
         res.status(400).json({ error: err.message })
@@ -33,6 +37,7 @@ const getOneProduct = async (req, res) => {
 }
 
 const deleteProduct = async (req, res) => {
+    //in production -> only admins
     try {
         const { id } = req.params;
         const Product = await productModel.findByIdAndDelete(id);

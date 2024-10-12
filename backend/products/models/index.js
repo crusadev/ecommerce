@@ -30,6 +30,9 @@ const ProductSchema = new Schema({
         type: String,
         require: true
     },
+    reviews: [{
+        type: mongoose.Schema.Types.ObjectId, ref: 'Reviews',
+    }],
     admin: {
         type: mongoose.Schema.Types.ObjectId, ref: 'Users',
         require: true
