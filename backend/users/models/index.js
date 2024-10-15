@@ -25,6 +25,12 @@ const UserSchema = new Schema({
         type: String,
         default: 'user'
     },
+    cart: [{
+        type: mongoose.Schema.Types.ObjectId, ref: 'Products'
+    }],
+    wishlist: [{
+        type: mongoose.Schema.Types.ObjectId, ref: 'Products'
+    }],
     orders: [{
         type: mongoose.Schema.Types.ObjectId, ref: 'Orders'
     }]

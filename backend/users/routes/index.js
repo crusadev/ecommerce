@@ -7,15 +7,21 @@ const {
     signoutUser,
     getCurrentUser,
     deleteUser,
-    getAllUsers
+    getAllUsers,
+    putUser,
+    putAdmin
 } = require('../controllers')
 
 router
     .post('/', postUser)
     .get('/', /* verifyAccessToken */ getAllUsers)
+router.put('/admin/:id', putAdmin)
 router.post('/login', logUser)
 router.post('/signout', signoutUser)
 router.get('/current', verifyAccessToken, getCurrentUser)
-router.delete('/:id', verifyAccessToken, deleteUser)
+router
+    .delete('/:id', verifyAccessToken, deleteUser)
+    .put('/:id', verifyAccessToken, putUser)
+
 
 module.exports = router 

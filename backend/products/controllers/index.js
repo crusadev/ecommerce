@@ -50,4 +50,24 @@ const deleteProduct = async (req, res) => {
     }
 }
 
-module.exports = { postProduct, getAllProducts, getOneProduct, deleteProduct }
+const putProduct = async (req, res) => {
+    const { id } = req.params
+    try {
+        //Check current user
+        const User = await currentUser(req, res)
+        if (!User) {
+            return res.status(403).json({ error: "InvalidId" });
+        }
+        //Check user authorization
+        if (User.role !== 'admin') {
+            return res.status(403).json({ error: "Forbidden" });
+        }
+
+        await productModel.findByIdAndUpdate(id, req.body)
+        res.status(200).json("Product updated successfully");
+    } catch (err) {
+        res.status(400).json({ error: err.message });
+    }
+}
+
+module.exports = { postProduct, getAllProducts, getOneProduct, deleteProduct, putProduct }

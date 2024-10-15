@@ -11,12 +11,15 @@ const postOrder = async (req, res) => {
         if (!User) {
             return res.status(403).json({ error: "InvalidId" });
         }
+
         /* Using a for..of loop in order to iterate asynchronously through
            the array and increase the total */
         for (const product of products) {
             const Product = await productModel.findById(product)
             total += Product.price
         };
+
+        //Create order
         const Order = await orderModel.create({ products, total, user: User._id })
 
         //Add the order to User
@@ -39,13 +42,22 @@ const getAllOrders = async (req, res) => {
 }
 
 const getOneOrder = async (req, res) => {
-    //in production -> only admins
+    const { id } = req.params;
     try {
-        const { id } = req.params;
         const Order = await orderModel.findById(id);
         if (!Order) {
-            return res.status(404).json({ error: "InvalidId" });
+            return res.status(404).json({ error: "InvalidOrderId" });
         }
+        //Check current user
+        const User = await currentUser(req, res)
+        if (!User) {
+            return res.status(403).json({ error: "InvalidId" });
+        }
+        //Check user authorization
+        if (User._id.toString() !== Order.user.toString() && User.role !== 'admin') {
+            return res.status(403).json({ error: "Forbidden" });
+        }
+        
         res.status(200).json(Order);
     } catch (err) {
         res.status(400).json({ error: err.message });

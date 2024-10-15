@@ -1,5 +1,4 @@
 const userModel = require('../models')
-const jwt = require('jsonwebtoken')
 const { createAccessToken, createRefreshToken } = require('../../functions/createTokens');
 const { currentUser } = require('../../functions/currentUser')
 
@@ -16,7 +15,6 @@ const accessOptions = {
     sameSite: "none",
     secure: false,
 };
-
 
 const postUser = async (req, res) => {
     const { fullname, email, password } = req.body
@@ -52,9 +50,13 @@ const logUser = async (req, res) => {
 }
 
 const signoutUser = async (req, res) => {
-    res.cookie('refreshToken', '', { maxAge: 1, httpOnly: true, sameSite: 'none', secure: true })
-    res.cookie('accessToken', '', { maxAge: 1, httpOnly: true, sameSite: 'none', secure: true })
-    res.status(200).json('Signed out')
+    try {
+        res.cookie('refreshToken', '', { maxAge: 1, httpOnly: true, sameSite: 'none', secure: true })
+        res.cookie('accessToken', '', { maxAge: 1, httpOnly: true, sameSite: 'none', secure: true })
+        res.status(200).json('Signed out')
+    } catch (err) {
+        res.status(400).json({ error: err.message })
+    }
 }
 
 const getAllUsers = async (req, res) => {
@@ -98,6 +100,48 @@ const deleteUser = async (req, res) => {
     }
 }
 
+const putUser = async (req, res) => {
+    const { id } = req.params
+    try {
+        //Check current user
+        const User = await currentUser(req, res)
+        if (!User) {
+            return res.status(403).json({ error: "InvalidId" });
+        }
+        //Check user authorization
+        if (User._id.toString() !== id && User.role !== 'admin') {
+            return res.status(403).json({ error: "Forbidden" });
+        }
+
+        await userModel.findByIdAndUpdate(id, req.body)
+        res.status(200).json("User updated successfully");
+    } catch (err) {
+        res.status(400).json({ error: err.message });
+    }
+}
+
+//Only an admin can add admins(in production admins will have a separate DB)
+const putAdmin = async (req, res) => {
+    const { id } = req.params
+    try {
+        //Check current user
+        const User = await currentUser(req, res)
+        if (!User) {
+            return res.status(403).json({ error: "InvalidId" });
+        }
+        //Check user authorization
+        if (User.role !== 'admin') {
+            return res.status(403).json({ error: "Forbidden" });
+        }
+        //Update existing user
+        const newAdmin = await userModel.findByIdAndUpdate(id, { role: 'admin' })
+            .select('_id fullname email')
+        res.status(200).json(`User ${newAdmin} is now an admin`)
+    } catch (err) {
+        res.status(400).json({ error: err.message })
+    }
+}
+
 module.exports = {
     postUser,
     logUser,
@@ -105,5 +149,7 @@ module.exports = {
     signoutUser,
     getCurrentUser,
     deleteUser,
-    getAllUsers
+    getAllUsers,
+    putUser,
+    putAdmin
 }

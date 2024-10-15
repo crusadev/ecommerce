@@ -19,6 +19,7 @@ const postReview = async (req, res) => {
 }
 
 const getAllReviews = async (req, res) => {
+    //redundant, only for testing
     try {
         const Reviews = await reviewModel.find()
         res.status(200).json(Reviews)
