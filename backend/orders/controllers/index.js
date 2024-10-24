@@ -1,16 +1,12 @@
 const orderModel = require('../models')
 const productModel = require('../../products/models')
 const userModel = require('../../users/models')
-const { currentUser } = require('../../functions/currentUser')
 
 const postOrder = async (req, res) => {
     const { products } = req.body
     let total = 0
     try {
-        const User = await currentUser(req, res)
-        if (!User) {
-            return res.status(403).json({ error: "InvalidId" });
-        }
+        const User = req.headers.user
 
         /* Using a for..of loop in order to iterate asynchronously through
            the array and increase the total */
@@ -48,16 +44,13 @@ const getOneOrder = async (req, res) => {
         if (!Order) {
             return res.status(404).json({ error: "InvalidOrderId" });
         }
-        //Check current user
-        const User = await currentUser(req, res)
-        if (!User) {
-            return res.status(403).json({ error: "InvalidId" });
-        }
+
+        const User = req.headers.user
         //Check user authorization
         if (User._id.toString() !== Order.user.toString() && User.role !== 'admin') {
             return res.status(403).json({ error: "Forbidden" });
         }
-        
+
         res.status(200).json(Order);
     } catch (err) {
         res.status(400).json({ error: err.message });
@@ -67,10 +60,7 @@ const getOneOrder = async (req, res) => {
 const deleteOrder = async (req, res) => {
     const { id } = req.params;
     try {
-        const User = await currentUser(req, res)
-        if (!User) {
-            return res.status(404).json({ error: "InvalidId" });
-        }
+        const User = req.headers.user
 
         const Order = await orderModel.findById(id)
         if (!Order) {

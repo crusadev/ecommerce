@@ -1,6 +1,5 @@
 const userModel = require('../models')
 const { createAccessToken, createRefreshToken } = require('../../functions/createTokens');
-const { currentUser } = require('../../functions/currentUser')
 
 //Cookies options (in production -> secure:true)
 const refreshOptions = {
@@ -71,10 +70,7 @@ const getAllUsers = async (req, res) => {
 
 const getCurrentUser = async (req, res) => {
     try {
-        const User = await currentUser(req, res)
-        if (!User) {
-            return res.status(403).json({ error: "InvalidId" });
-        }
+        const User = req.headers.user
         res.status(200).json(User)
     } catch (error) {
         res.status(400).json({ error: error.message })
@@ -84,11 +80,7 @@ const getCurrentUser = async (req, res) => {
 const deleteUser = async (req, res) => {
     const { id } = req.params;
     try {
-        //Check current user
-        const User = await currentUser(req, res)
-        if (!User) {
-            return res.status(403).json({ error: "InvalidId" });
-        }
+        const User = req.headers.user
         //Check user authorization
         if (User._id.toString() !== id && User.role !== 'admin') {
             return res.status(403).json({ error: "Forbidden" });
@@ -103,11 +95,7 @@ const deleteUser = async (req, res) => {
 const putUser = async (req, res) => {
     const { id } = req.params
     try {
-        //Check current user
-        const User = await currentUser(req, res)
-        if (!User) {
-            return res.status(403).json({ error: "InvalidId" });
-        }
+        const User = req.headers.user
         //Check user authorization
         if (User._id.toString() !== id && User.role !== 'admin') {
             return res.status(403).json({ error: "Forbidden" });
@@ -124,11 +112,7 @@ const putUser = async (req, res) => {
 const putAdmin = async (req, res) => {
     const { id } = req.params
     try {
-        //Check current user
-        const User = await currentUser(req, res)
-        if (!User) {
-            return res.status(403).json({ error: "InvalidId" });
-        }
+        const User = req.headers.user
         //Check user authorization
         if (User.role !== 'admin') {
             return res.status(403).json({ error: "Forbidden" });

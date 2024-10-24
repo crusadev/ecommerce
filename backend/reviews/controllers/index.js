@@ -1,14 +1,10 @@
 const reviewModel = require('../models')
 const productModel = require('../../products/models')
-const { currentUser } = require('../../functions/currentUser')
 
 const postReview = async (req, res) => {
     const { productId, stars, title, body } = req.body
     try {
-        const User = await currentUser(req, res)
-        if (!User) {
-            return res.status(404).json({ error: "InvalidId" });
-        }
+        const User = req.headers.user
         const Review = await reviewModel.create({ user: User._id, stars, title, body })
         //Add Review to Product
         await productModel.findByIdAndUpdate(productId, { $push: { reviews: Review._id } })
@@ -32,11 +28,7 @@ const deleteReview = async (req, res) => {
     const { id } = req.params;
     const { productId } = req.body
     try {
-
-        const User = await currentUser(req, res)
-        if (!User) {
-            return res.status(404).json({ error: "InvalidId" });
-        }
+        const User = req.headers.user
         const Review = await reviewModel.findById(id);
         if (!Review) {
             return res.status(404).json({ error: "InvalidReviewId" });
